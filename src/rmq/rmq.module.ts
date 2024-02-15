@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RmqService } from './rmq.service';
 
 @Module({
-  imports: [
-    ClientsModule.register([{ name: 'RMQ_SERVICE', transport: Transport.RMQ }]),
-  ],
+  providers: [RmqService],
+  exports: [RmqService],
 })
 export class RmqModule {}

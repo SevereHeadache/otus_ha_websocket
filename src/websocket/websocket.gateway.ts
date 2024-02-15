@@ -9,15 +9,20 @@ import {
 import { Subscription } from 'rxjs';
 import { WebsocketService } from './websocket.service';
 import { Server, Socket } from 'socket.io';
+import { RmqService } from 'src/rmq/rmq.service';
 
 @WebSocketGateway({ cors: true })
 export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
   private eventSubscription: Subscription;
   private logger = new Logger('WebSocketGateway');
-
-  constructor(private readonly service: WebsocketService) {}
+  private server: Server;
+  constructor(
+    private readonly service: WebsocketService,
+    private readonly rmqService: RmqService,
+  ) {}
 
   afterInit(server: Server): void {
+    this.server = server;
     this.eventSubscription = this.service.getOutputEventSubject().subscribe({
       next: (event) => {
         if (event.clientId) {
@@ -34,7 +39,7 @@ export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
 
   @SubscribeMessage('message')
   handleMessage(
-    @MessageBody() data: string,
+    @MessageBody() data: string | any,
     @ConnectedSocket() client: Socket,
   ) {
     if (typeof data == 'string') {
@@ -44,6 +49,13 @@ export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
     this.service
       .getInputEventSubject()
       .next({ clientId: client.id, name: '', data });
+
+    if (data.userId) {
+      this.rmqService.getConsumer$(data.userId).subscribe((msg) => {
+        this.server.sockets.sockets.get(client.id).emit('message', msg);
+      });
+      this.rmqService.getPublisher$(data.userId).next(data);
+    }
   }
 
   onApplicationShutdown() {

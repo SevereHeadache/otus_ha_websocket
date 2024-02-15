@@ -28,6 +28,7 @@
     "@nestjs/websockets": "^10.3.3",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
+    "rabbitmq-client": "^4.5.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.4"
