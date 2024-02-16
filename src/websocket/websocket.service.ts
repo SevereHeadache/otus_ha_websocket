@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, Subject } from 'rxjs';
 
-interface SocketEvent {
+export interface SocketEvent {
   clientId: string | null;
   name: string;
-  data: unknown;
+  data: any;
 }
 
 @Injectable()

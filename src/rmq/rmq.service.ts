@@ -40,7 +40,7 @@ export class RmqService implements OnApplicationShutdown {
       this.publishers[userId] = this.rabbit.createPublisher({
         confirm: true,
         maxAttempts: 2,
-        exchanges: [{ exchange: 'ws', type: 'topic' }],
+        exchanges: [{ exchange: 'ws', type: 'topic', durable: true }],
       });
 
       const messages = new Subject<any>();
@@ -68,7 +68,7 @@ export class RmqService implements OnApplicationShutdown {
           queue: 'user-posts',
           queueOptions: { durable: true },
           qos: { prefetchCount: 2 },
-          exchanges: [{ exchange: 'ws', type: 'topic' }],
+          exchanges: [{ exchange: 'ws', type: 'topic', durable: true }],
           queueBindings: [{ exchange: 'ws', routingKey: 'posted.' + userId }],
         },
         async (msg) => {

@@ -23,6 +23,16 @@ export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
 
   afterInit(server: Server): void {
     this.server = server;
+    this.server.on('connect', (socket) => {
+      this.logger.debug('connect new client: ' + socket.id);
+      this.service.getInputEventSubject().next({
+        clientId: socket.id,
+        name: 'connect',
+        data: {
+          token: socket.handshake.headers['auth-token'] ?? '',
+        },
+      });
+    });
     this.eventSubscription = this.service.getOutputEventSubject().subscribe({
       next: (event) => {
         if (event.clientId) {
@@ -46,16 +56,6 @@ export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
       data = JSON.parse(data);
     }
     this.logger.debug({ clientId: client.id, name: '', data });
-    this.service
-      .getInputEventSubject()
-      .next({ clientId: client.id, name: '', data });
-
-    if (data.userId) {
-      this.rmqService.getConsumer$(data.userId).subscribe((msg) => {
-        this.server.sockets.sockets.get(client.id).emit('message', msg);
-      });
-      this.rmqService.getPublisher$(data.userId).next(data);
-    }
   }
 
   onApplicationShutdown() {

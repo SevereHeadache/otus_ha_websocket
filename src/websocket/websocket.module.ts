@@ -6,5 +6,6 @@ import { RmqModule } from 'src/rmq/rmq.module';
 @Module({
   imports: [RmqModule],
   providers: [WebsocketGateway, WebsocketService],
+  exports: [WebsocketGateway, WebsocketService],
 })
 export class WebsocketModule {}
