@@ -36,11 +36,14 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   private requestUserInfo(token: string) {
-    return this.httpService.get('http://0.0.0.0:8888/me', {
-      headers: {
-        'auth-token': token,
+    return this.httpService.get(
+      `http://${process.env.APP_HOST}:${process.env.APP_PORT}/me`,
+      {
+        headers: {
+          'auth-token': token,
+        },
       },
-    });
+    );
   }
 
   private addListenerForRMQ(userId: string, clientId) {

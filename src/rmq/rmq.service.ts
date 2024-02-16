@@ -13,7 +13,9 @@ export class RmqService implements OnApplicationShutdown {
   private publishers$: { [id: string]: Subject<any> } = {};
 
   constructor() {
-    this.rabbit = new Connection('amqp://guest:guest@localhost:5672');
+    this.rabbit = new Connection(
+      `amqp://${process.env.RMQ_USER_NAME}:${process.env.RMQ_PWD}@${process.env.RMQ_HOST}:${process.env.RMQ_PORT}`,
+    );
     this.rabbit.on('error', (err) => {
       this.logger.debug('RabbitMQ connection error: ' + err);
     });

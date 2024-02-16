@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    restart: on-failure
+    volumes:
+      # - /usr/src/app/dist
+      # - /usr/src/app/node_modules
+      - .:/usr/src/app
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+      - 9229:9229
+      - 5672:5672
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: host
