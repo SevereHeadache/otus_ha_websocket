@@ -4,19 +4,10 @@ services:
     build:
       context: .
       dockerfile: .docker/Dockerfile
-    restart: on-failure
+    restart: unless-stopped
     volumes:
-      # - /usr/src/app/dist
-      # - /usr/src/app/node_modules
       - .:/usr/src/app
-    command: npm run start:dev
     ports:
-      - 3000:3000
-      - 9229:9229
-      - 5672:5672
-    networks:
-      - web-network
-
-networks:
-  web-network:
-    driver: host
+      - ${PORT}:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
