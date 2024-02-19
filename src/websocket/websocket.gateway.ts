@@ -36,9 +36,10 @@ export class WebsocketGateway implements OnGatewayInit, OnApplicationShutdown {
     this.eventSubscription = this.service.getOutputEventSubject().subscribe({
       next: (event) => {
         if (event.clientId) {
-          server.sockets.sockets
-            .get(event.clientId)
-            .emit(event.name, event.data);
+            const client = server.sockets.sockets.get(event.clientId);
+            if (client) {
+              client.emit(event.name, event.data)
+            };
         } else {
           server.emit(event.name, event.data);
         }
